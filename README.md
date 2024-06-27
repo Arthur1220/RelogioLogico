@@ -4,8 +4,61 @@ Este projeto implementa um sistema de sincronização de relógios vetoriais usa
 
 ## Estrutura do Projeto
 
-- `vector_clock.py`: Código principal que executa a simulação.
-- `operations.txt`: Arquivo de entrada contendo a sequência de operações que cada processo deve realizar.
+O projeto é composto pelos seguintes arquivos e componentes principais:
+
+### Arquivos
+
+1. **`vector_clock.py`**:
+   - Este é o arquivo principal do projeto que contém a implementação do algoritmo de relógio vetorial usando MPI.
+   - Inclui a definição da classe `VectorClock`, que gerencia o vetor de relógios para cada processo.
+   - Implementa as operações de evento local (`local_event`), envio de mensagem (`send_message`) e recebimento de mensagem (`receive_message`).
+   - Contém funções auxiliares para a impressão do estado dos relógios e para a verificação de atrasos na entrega das mensagens (`check_delays`).
+   - Define a função `execute_operations`, que executa uma sequência de operações definidas no arquivo de entrada.
+   - Inclui a lógica para a inicialização do MPI, a distribuição das operações entre os processos, e a coleta e impressão dos vetores finais dos relógios.
+
+2. **`operations.txt`**:
+   - Arquivo de entrada que especifica a sequência de operações que cada processo deve realizar.
+   - Cada linha do arquivo representa uma operação que um processo específico deve executar.
+   - As operações possíveis são: `local_event`, `send_message <dest>`, e `receive_message`.
+
+### Classes e Funções
+
+1. **Classe `VectorClock`**:
+   - **`__init__(self, size, rank)`**: Inicializa o vetor de relógios com zeros e define o rank do processo.
+   - **`local_event(self)`**: Incrementa o contador do processo local e imprime o estado atual do vetor de relógios.
+   - **`send_message(self, dest)`**: Incrementa o contador do processo local, envia o vetor de relógios para o processo de destino, e imprime o estado atual do vetor de relógios.
+   - **`receive_message(self)`**: Recebe um vetor de relógios de qualquer processo, verifica atrasos usando `check_delays`, e atualiza o vetor de relógios local.
+   - **`check_delays(self, received_clock, sender_rank)`**: Verifica atrasos na entrega de mensagens baseado nas condições de causalidade.
+   - **`print_clock(self, event)`**: Imprime o estado atual do vetor de relógios com uma descrição do evento ocorrido.
+
+2. **Funções Auxiliares**:
+   - **`execute_operations(rank, operations)`**: Executa as operações especificadas para um dado processo. As operações são lidas do arquivo de entrada e distribuídas para cada processo.
+   - **`initial_print()`**: Imprime a quantidade de processos e os vetores de relógios iniciais para cada processo.
+   - **`final_print(process_clocks)`**: Coleta e imprime os vetores finais de relógios para todos os processos no final da execução.
+   - **`main()`**: Função principal que inicializa o MPI, lê e distribui as operações, executa as operações para cada processo, e imprime os vetores de relógios finais.
+
+### Funcionamento do Algoritmo
+
+1. **Inicialização**:
+   - O MPI é inicializado e os processos obtêm seus ranks e o tamanho total da comunicação.
+   - Cada processo inicializa seu vetor de relógios com zeros.
+
+2. **Leitura e Distribuição de Operações**:
+   - O processo com rank 0 lê o arquivo `operations.txt` e distribui as operações para todos os processos usando `comm.bcast`.
+
+3. **Execução das Operações**:
+   - Cada processo executa suas operações conforme especificado no arquivo de entrada.
+   - Para `local_event`, o contador do processo local é incrementado.
+   - Para `send_message`, o contador do processo local é incrementado e o vetor de relógios é enviado ao processo de destino.
+   - Para `receive_message`, o vetor de relógios é recebido de outro processo, verificado para atrasos, e o vetor local é atualizado conforme necessário.
+
+4. **Verificação de Atrasos**:
+   - A função `check_delays` garante que a entrega de mensagens respeite a causalidade, verificando se o vetor de relógios recebido satisfaz as condições de causalidade.
+
+5. **Finalização**:
+   - Após a execução de todas as operações, os vetores de relógios finais são coletados e impressos.
+
+Esta estrutura detalhada oferece uma visão abrangente do funcionamento do algoritmo de relógio vetorial e da interação entre os componentes do projeto.
 
 ## Como Executar
 
