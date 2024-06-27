@@ -58,8 +58,6 @@ O projeto é composto pelos seguintes arquivos e componentes principais:
 5. **Finalização**:
    - Após a execução de todas as operações, os vetores de relógios finais são coletados e impressos.
 
-Esta estrutura detalhada oferece uma visão abrangente do funcionamento do algoritmo de relógio vetorial e da interação entre os componentes do projeto.
-
 ## Como Executar
 
 1. **Pré-requisitos**: Certifique-se de ter `mpi4py` instalado:
