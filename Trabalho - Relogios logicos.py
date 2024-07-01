@@ -21,10 +21,6 @@ class VectorClock:
         self.clock = [0] * size
         self.rank = rank
 
-    def local_event(self):
-        self.clock[self.rank] = 1
-        self.print_clock("Evento local")
-
     def send_message(self, dest):
         self.clock[self.rank] = 1
         comm.send((self.rank, self.clock.copy()), dest=dest)
@@ -62,15 +58,15 @@ class VectorClock:
 def execute_operations(rank, operations):
     vector_clock = VectorClock(size, rank)
     for operation in operations:
-        sleep(0.2)
+        sleep(0.1)
         op_parts = operation.split()
         if int(op_parts[0]) == rank:
-            if op_parts[1] == "local_event":
-                vector_clock.local_event()
-            elif op_parts[1] == "send_message":
+            if op_parts[1] == "send_message":
                 vector_clock.send_message(int(op_parts[2]))
             elif op_parts[1] == "receive_message":
                 vector_clock.receive_message()
+            else:
+                print(f"Processo {rank} - Operação inválida - {operation}")
     return vector_clock
 
 # Exibe a quantidade de processos e o vetor inicial de relógios
