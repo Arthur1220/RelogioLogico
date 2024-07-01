@@ -27,7 +27,7 @@ class VectorClock:
         self.print_clock(f"Enviou mensagem para {dest}")
 
     def check_delays(self, received_clock, receive_rank):
-        # Verificar a condição m[i] = VCj[i] + 1
+        # Verificar a condição m[i] = VCj[i] + 1, caso esteja congruente, ira seguir para a proxima verificacao
         if received_clock[receive_rank] != self.clock[receive_rank] + 1:
             print(f"Processo {self.rank} - Atraso detectado da mensagem de {receive_rank} - Primeira condicao")
             return False
@@ -48,8 +48,6 @@ class VectorClock:
                 if received_clock[i] == 1:
                     self.clock[i] = 1
             self.print_clock(f"Recebeu mensagem  de {receive_rank}")
-            if all(value == 1 for value in self.clock):
-                self.print_clock("Recebeu mensagens de todos os processos")
 
     def print_clock(self, event):
         print(f"Processo {self.rank} - {event} - Vetor: {self.clock}")
@@ -94,6 +92,7 @@ def main():
     if rank == 0:
         print("\nIniciando a leitura do arquivo de operacoes...\n")
         sleep(0.5)
+        #with open('multicast_example.txt', 'r') as file:
         with open('operations.txt', 'r') as file:
             operations = file.readlines()
         operations = [op.strip() for op in operations]
