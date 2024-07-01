@@ -1,10 +1,10 @@
-P0 send_message 1
-P0 send_message 3
-P1 receive_message
-P1 send_message 2
-P1 send_message 3
-P2 receive_message
-P2 send_message 3
-P3 receive_message
-P3 receive_message
-P3 receive_message
+0 send_message 1
+0 send_message 3
+1 receive_message
+1 send_message 2
+1 send_message 3
+2 receive_message
+2 send_message 3
+3 receive_message
+3 receive_message
+3 receive_message

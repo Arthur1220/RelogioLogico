@@ -27,32 +27,31 @@ class VectorClock:
 
     def send_message(self, dest):
         self.clock[self.rank] = 1
-        comm.send(self.clock.copy(), dest=dest)
+        comm.send((self.rank, self.clock.copy()), dest=dest)
         self.print_clock(f"Enviou mensagem para {dest}")
 
-    def check_delays(self, received_clock, sender_rank):
+    def check_delays(self, received_clock, receive_rank):
         # Verificar a condição m[i] = VCj[i] + 1
-        if received_clock[sender_rank] != self.clock[sender_rank] + 1:
-            print(f"Processo {self.rank} - Atraso detectado - Primeira condicao")
+        if received_clock[receive_rank] != self.clock[receive_rank] + 1:
+            print(f"Processo {self.rank} - Atraso detectado da mensagem de {receive_rank} - Primeira condicao")
             return False
         
         # Verificar a condição m[k] <= VCj[k] para todos k diferentes de i
         for i in range(len(self.clock)):
-            if i != sender_rank:
+            if i != receive_rank:
                 if received_clock[i] > self.clock[i]:
-                    print(f"Processo {self.rank} - Atraso detectado - Segunda condicao")
+                    print(f"Processo {self.rank} - Atraso detectado da mensagem de {receive_rank} - Segunda condicao")
                     return False
 
         return True
     
     def receive_message(self):
-        received_clock = comm.recv(source=MPI.ANY_SOURCE)
-        sender_rank = received_clock.index(max(received_clock))
-        if self.check_delays(received_clock, sender_rank):
+        receive_rank, received_clock = comm.recv(source=MPI.ANY_SOURCE)
+        if self.check_delays(received_clock, receive_rank):
             for i in range(len(self.clock)):
                 if received_clock[i] == 1:
                     self.clock[i] = 1
-            self.print_clock("Recebeu mensagem")
+            self.print_clock(f"Recebeu mensagem  de {receive_rank}")
             if all(value == 1 for value in self.clock):
                 self.print_clock("Recebeu mensagens de todos os processos")
 
@@ -65,7 +64,7 @@ def execute_operations(rank, operations):
     for operation in operations:
         sleep(0.2)
         op_parts = operation.split()
-        if op_parts[0] == f'P{rank}':
+        if int(op_parts[0]) == rank:
             if op_parts[1] == "local_event":
                 vector_clock.local_event()
             elif op_parts[1] == "send_message":
