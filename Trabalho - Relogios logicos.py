@@ -53,7 +53,6 @@ class VectorClock:
                 if received_clock[i] == 1:
                     self.clock[i] = 1
             self.print_clock("Recebeu mensagem")
-            # Verificações adicionais quando um processo recebe uma mensagem
             if all(value == 1 for value in self.clock):
                 self.print_clock("Recebeu mensagens de todos os processos")
 
