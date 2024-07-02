@@ -8,7 +8,7 @@ O projeto é composto pelos seguintes arquivos e componentes principais:
 
 ### Arquivos
 
-1. **`vector_clock.py`**:
+1. **`Trabalho - Relogios logicos.py`**:
    - Este é o arquivo principal do projeto que contém a implementação do algoritmo de relógio vetorial usando MPI.
    - Inclui a definição da classe `VectorClock`, que gerencia o vetor de relógios para cada processo.
    - Implementa as operações de evento local (`local_event`), envio de mensagem (`send_message`) e recebimento de mensagem (`receive_message`).
@@ -25,7 +25,6 @@ O projeto é composto pelos seguintes arquivos e componentes principais:
 
 1. **Classe `VectorClock`**:
    - **`__init__(self, size, rank)`**: Inicializa o vetor de relógios com zeros e define o rank do processo.
-   - **`local_event(self)`**: Incrementa o contador do processo local e imprime o estado atual do vetor de relógios.
    - **`send_message(self, dest)`**: Incrementa o contador do processo local, envia o vetor de relógios para o processo de destino, e imprime o estado atual do vetor de relógios.
    - **`receive_message(self)`**: Recebe um vetor de relógios de qualquer processo, verifica atrasos usando `check_delays`, e atualiza o vetor de relógios local.
    - **`check_delays(self, received_clock, sender_rank)`**: Verifica atrasos na entrega de mensagens baseado nas condições de causalidade.
@@ -48,7 +47,6 @@ O projeto é composto pelos seguintes arquivos e componentes principais:
 
 3. **Execução das Operações**:
    - Cada processo executa suas operações conforme especificado no arquivo de entrada.
-   - Para `local_event`, o contador do processo local é incrementado.
    - Para `send_message`, o contador do processo local é incrementado e o vetor de relógios é enviado ao processo de destino.
    - Para `receive_message`, o vetor de relógios é recebido de outro processo, verificado para atrasos, e o vetor local é atualizado conforme necessário.
 
@@ -65,57 +63,25 @@ O projeto é composto pelos seguintes arquivos e componentes principais:
    pip install mpi4py
    ```
 
-2. **Arquivo de Entrada**: Crie um arquivo `operations.txt` com a sequência de operações. O formato do arquivo deve ser:
+2. **Arquivo de Entrada**: Crie um arquivo `operations.txt` com a sequência de operações. O formato do arquivo deve ser como o abaixo (exemplo do exercicio do Arquivo 10 - Relógios lógicos):
 
    ```
-   P0 send_message 1
-   P0 send_message 3
-   P1 receive_message
-   P1 send_message 2
-   P1 send_message 3
-   P2 receive_message
-   P2 send_message 3
-   P3 receive_message
-   P3 receive_message
-   P3 receive_message
+   0 send_message 1
+   0 send_message 3
+   1 receive_message
+   1 send_message 2
+   1 send_message 3
+   2 receive_message
+   2 send_message 3
+   3 receive_message
+   3 receive_message
+   3 receive_message 
    ```
 
    Cada linha representa uma operação que um processo deve realizar. As operações são:
 
-   - `local_event`: Evento local no processo.
-   - `send_message <dest>`: Envia uma mensagem para o processo de destino.
-   - `receive_message`: Recebe uma mensagem de qualquer processo.
-
-   **Possibilidades de Entrada para 4 Processos**
-
-   Aqui estão todas as possíveis entradas com 4 processos, incluindo as operações de envio e recebimento de mensagens entre os processos:
-
-   ```txt
-   P0 send_message 1
-   P0 send_message 2
-   P0 send_message 3
-   P1 receive_message
-   P2 receive_message
-   P3 receive_message
-   P1 send_message 0
-   P1 send_message 2
-   P1 send_message 3
-   P0 receive_message
-   P2 receive_message
-   P3 receive_message
-   P2 send_message 0
-   P2 send_message 1
-   P2 send_message 3
-   P0 receive_message
-   P1 receive_message
-   P3 receive_message
-   P3 send_message 0
-   P3 send_message 1
-   P3 send_message 2
-   P0 receive_message
-   P1 receive_message
-   P2 receive_message
-   ```
+   - `<remetente> send_message <destinatario>`: Remetente envia uma mensagem para o processo destinatario.
+   - `<remetente> receive_message`: Remetente recebe uma mensagem de qualquer processo.
 
 3. **Execução do Programa**: Para rodar o programa com MPI, execute o seguinte comando:
 
@@ -136,21 +102,26 @@ Processo 1 - Vetor inicial: [0, 0, 0, 0]
 Processo 2 - Vetor inicial: [0, 0, 0, 0]
 Processo 3 - Vetor inicial: [0, 0, 0, 0]
 
-Processo 0 - Evento local - Vetor: [1, 0, 0, 0]
+Lendo o arquivo de entrada... 
+
 Processo 0 - Enviou mensagem para 1 - Vetor: [1, 0, 0, 0]
-Processo 1 - Recebeu mensagem - Vetor: [1, 1, 0, 0]
-Processo 1 - Enviou mensagem para 0 - Vetor: [1, 1, 0, 0]
-Processo 0 - Recebeu mensagem - Vetor: [1, 1, 0, 0]
+Processo 0 - Enviou mensagem para 3 - Vetor: [1, 0, 0, 0]
+Processo 1 - Recebeu mensagem  de 0 - Vetor: [1, 0, 0, 0]
+Processo 1 - Enviou mensagem para 2 - Vetor: [1, 1, 0, 0]
+Processo 1 - Enviou mensagem para 3 - Vetor: [1, 1, 0, 0]
+Processo 2 - Atraso detectado da mensagem de 1 - Segunda condicao
+Processo 2 - Enviou mensagem para 3 - Vetor: [0, 0, 1, 0]
+Processo 3 - Recebeu mensagem  de 0 - Vetor: [1, 0, 0, 0]
+Processo 3 - Recebeu mensagem  de 1 - Vetor: [1, 1, 0, 0]
+Processo 3 - Recebeu mensagem  de 2 - Vetor: [1, 1, 1, 0]
 
 Finalizando execução...
 
 Vetores finais:
-Processo 0 - Vetor final: [1, 1, 0, 0]
+Processo 0 - Vetor final: [1, 0, 0, 0]
 Processo 1 - Vetor final: [1, 1, 0, 0]
-Processo 2 - Vetor final: [0, 0, 0, 0]
-Processo 3 - Vetor final: [0, 0, 0, 0]
-
-Fim da execução
+Processo 2 - Vetor final: [0, 0, 1, 0]
+Processo 3 - Vetor final: [1, 1, 1, 0]
 ```
 
 ## Explicação do Relógio Vetorial
@@ -159,8 +130,15 @@ O relógio vetorial é uma estrutura de dados usada para capturar a causalidade 
 
 ### Operações
 
-- **Evento Local**: Incrementa o contador do processo local.
 - **Enviar Mensagem**: Incrementa o contador do processo local e envia o vetor de relógios atual para o processo de destino.
 - **Receber Mensagem**: Recebe o vetor de relógios de outro processo e atualiza o vetor local para refletir a causalidade.
 
 Ao receber uma mensagem, o processo atualiza seu vetor de relógios tomando o máximo valor de cada posição entre seu próprio vetor e o vetor recebido. Isso garante que o vetor de relógios capture a causalidade completa dos eventos.
+
+## Autoria
+
+Feito por: Arthur Marques Azevedo
+Matricula: 202010234
+Disciplina: Sistemas Distribuidos
+Descricao do problema:
+Programar o algoritmo de relógio de Lamport para sincronização de relógios lógicos com comunicação causal (via relógios vetoriais) utilizando MPI para o caso do exercício anterior.
